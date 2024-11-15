@@ -1,23 +1,22 @@
 package rentasad.library.tools.csvGenerator;
 
-import rentasad.library.tools.exceptions.UnknownFieldIntException;
 
 public interface ICsvGeneratorDataEntry
 {
+
 	/**
-	 *  Methode ist Voraussetzung faer das Funktionieren des CSV-Generators.
-	 *  Gibt das Value der zugehaerigen Spalte zuraeck
-	 * @param colNumber
-	 * @return
-	 * @throws UnknownFieldIntException 
+	 * Retrieves the value of the specified column number.
+	 *
+	 * @param colNumber the column number whose value is to be retrieved.
+	 * @return the value of the specified column as a String.
+	 * @throws IllegalArgumentException if an invalid colNumber is provided.
 	 */
-	public String getValueEntry(int colNumber) throws UnknownFieldIntException;
+	public String getValueEntry(int colNumber) throws IllegalArgumentException;
+
 	/**
-	 * 
-	 * Description: Gibt den Header der CSV-Datei als StringArray zuraeck
-	 * 
-	 * @return NULL wenn kein Header definiert ist.
-	 * Creation: 20.10.2015 by mst
+	 * Returns the header of the CSV file as a String array.
+	 *
+	 * @return an array of Strings representing the header of the CSV file, or null if no header is defined.
 	 */
 	public String[] getCSVHeaderStringArray();
 }

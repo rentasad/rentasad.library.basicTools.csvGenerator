@@ -7,44 +7,32 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import rentasad.library.tools.exceptions.UnknownFieldIntException;
-
-
-
-
-
 /**
- * 
  * Gustini GmbH (2018)
  * Creation: 06.11.2015
  * gustini.library.basicTools
  * rentasad.library.tools.csvGenerator
- * 
+ *
  * @author Matthias Staud
- *
- *
+ * <p>
+ * <p>
  * Description: CSV Generation Tool
- *
  */
 public class CSVGenerator
 {
-	private String trennzeichen;
-	private String satzTrenner;
-	private boolean writeHeader;
+	private final String trennzeichen;
+	private final String satzTrenner;
+	private final boolean writeHeader;
 
-	
 	/**
-	 * 
 	 * @param trennzeichen - Trennzeichen der CSV-Datei
-	 * @param satzTrenner - Satztrenner
-	 * @param writeHeader - soll Header geschrieben werden?
+	 * @param satzTrenner  - Satztrenner
+	 * @param writeHeader  - soll Header geschrieben werden?
 	 */
-	public CSVGenerator(
-						String trennzeichen,
-						String satzTrenner,
-						boolean writeHeader)
+	public CSVGenerator(String trennzeichen, String satzTrenner, boolean writeHeader)
 	{
 		super();
 		this.trennzeichen = trennzeichen;
@@ -53,33 +41,28 @@ public class CSVGenerator
 	}
 
 	/**
-	 * 
-	 * Description:  CSV-Datei aus implementierten ICSVGeneratorDataEntry - Interface
-	 * 
-	 * @param csvFileName
-	 * @param valueEntriesList
-	 * @return
-	 * @throws IOException
-	 * @throws UnknownFieldIntException
-	 * Creation: 12.11.2018 by mst
+	 * Generates a CSV file from a list of ICsvGeneratorDataEntry objects.
+	 *
+	 * @param csvFileName      Name of the CSV file to be generated.
+	 * @param valueEntriesList List of ICsvGeneratorDataEntry objects containing data for the CSV.
+	 * @return true if the CSV file was successfully created, otherwise false.
+	 * @throws IOException if an I/O error occurs during file writing.
 	 */
-	public boolean generateCSVFromICsvGeneratorDataEntry(final String csvFileName, final List<ICsvGeneratorDataEntry> valueEntriesList) throws IOException, UnknownFieldIntException
+	public boolean generateCSVFromICsvGeneratorDataEntry(final String csvFileName, final List<ICsvGeneratorDataEntry> valueEntriesList) throws IOException
 	{
-	    ICsvGeneratorDataEntry[] valueEntries = valueEntriesList.toArray(new ICsvGeneratorDataEntry[0]);
-	    return generateCSVFromICsvGeneratorDataEntry(csvFileName,valueEntries );
+		ICsvGeneratorDataEntry[] valueEntries = valueEntriesList.toArray(new ICsvGeneratorDataEntry[0]);
+		return generateCSVFromICsvGeneratorDataEntry(csvFileName, valueEntries);
 	}
-	
-	
+
 	/**
-	 * Schreibt CSV-Datei aus implementierten ICSVGeneratorDataEntry - Interface
-	 * 
-	 * @param fileName
-	 * @param valueEntries
-	 * @return
-	 * @throws IOException
-	 * @throws UnknownFieldIntException 
+	 * Generates a CSV file from the provided ICsvGeneratorDataEntry array.
+	 *
+	 * @param fileName     the name of the CSV file to be created.
+	 * @param valueEntries an array of ICsvGeneratorDataEntry objects containing the data entries for the CSV.
+	 * @return true if the CSV file was successfully created, false otherwise.
+	 * @throws IOException if an I/O error occurs while writing to the file.
 	 */
-	public boolean generateCSVFromICsvGeneratorDataEntry(final String fileName, final ICsvGeneratorDataEntry[] valueEntries) throws IOException, UnknownFieldIntException
+	public boolean generateCSVFromICsvGeneratorDataEntry(final String fileName, final ICsvGeneratorDataEntry[] valueEntries) throws IOException
 	{
 
 		boolean success = false;
@@ -93,7 +76,7 @@ public class CSVGenerator
 
 			if (i == 0 && this.writeHeader)
 			{
-				String headerString = "";
+				StringBuilder headerString = new StringBuilder();
 				/*
 				 * HEADER der CSV schreiben
 				 */
@@ -101,34 +84,46 @@ public class CSVGenerator
 				{
 					if (col == 0)
 					{
-						headerString += this.satzTrenner + headerStringArray[col] + this.satzTrenner;
-					} else
+						headerString.append(this.satzTrenner)
+									.append(headerStringArray[col])
+									.append(this.satzTrenner);
+					}
+					else
 					{
-						headerString += trennzeichen + this.satzTrenner + headerStringArray[col] + this.satzTrenner;
+						headerString.append(trennzeichen)
+									.append(this.satzTrenner)
+									.append(headerStringArray[col])
+									.append(this.satzTrenner);
 					}
 				}
-				fileWriter.write(headerString);
+				fileWriter.write(headerString.toString());
 				fileWriter.append('\r');
 				fileWriter.append('\n');
 			}
 			/**
 			 * Zeilen schreiben.
 			 */
-			String zeile = "";
+			StringBuilder zeile = new StringBuilder();
 			for (int col = 0; col < headerStringArray.length; col++)
 			{
-			   
+
 				if (col == 0)
 				{
-					zeile += this.satzTrenner + value.getValueEntry(col) + this.satzTrenner;
-				} else
+					zeile.append(this.satzTrenner)
+						 .append(value.getValueEntry(col))
+						 .append(this.satzTrenner);
+				}
+				else
 				{
-					zeile += trennzeichen + this.satzTrenner + value.getValueEntry(col) + this.satzTrenner;
+					zeile.append(trennzeichen)
+						 .append(this.satzTrenner)
+						 .append(value.getValueEntry(col))
+						 .append(this.satzTrenner);
 				}
 
 			}
 
-			fileWriter.write(zeile);
+			fileWriter.write(zeile.toString());
 			fileWriter.append('\r');
 			fileWriter.append('\n');
 		}
@@ -141,18 +136,16 @@ public class CSVGenerator
 	/**
 	 * Schreibt UTF8-konforme CSV-Datei aus implementierten
 	 * ICSVGeneratorDataEntry - Interface
-	 * 
+	 *
 	 * @param fileName
 	 * @param valueEntries
 	 * @return boolean ob Erstellung der CSV-Datei geklappt hat.
 	 * @throws IOException
-	 * @throws UnknownFieldIntException 
 	 */
-	public boolean generateCSVFromICsvGeneratorDataEntryUTF8(final String fileName, final ICsvGeneratorDataEntry[] valueEntries) throws IOException, UnknownFieldIntException
+	public boolean generateCSVFromICsvGeneratorDataEntryUTF8(final String fileName, final ICsvGeneratorDataEntry[] valueEntries) throws IOException
 	{
 
 		boolean success = false;
-
 
 		OutputStream os = new FileOutputStream(fileName);
 		/*
@@ -165,7 +158,7 @@ public class CSVGenerator
 		os.write(187);
 		os.write(191);
 
-		PrintWriter out = new PrintWriter(new OutputStreamWriter(os, "UTF-8"));
+		PrintWriter out = new PrintWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8));
 
 		for (int i = 0; i < valueEntries.length; i++)
 		{
@@ -174,7 +167,7 @@ public class CSVGenerator
 
 			if (i == 0 && this.writeHeader)
 			{
-				String headerString = "";
+				StringBuilder headerString = new StringBuilder();
 				/*
 				 * HEADER der CSV schreiben
 				 */
@@ -182,10 +175,16 @@ public class CSVGenerator
 				{
 					if (col == 0)
 					{
-						headerString += this.satzTrenner + headerStringArray[col] + this.satzTrenner;
-					} else
+						headerString.append(this.satzTrenner)
+									.append(headerStringArray[col])
+									.append(this.satzTrenner);
+					}
+					else
 					{
-						headerString += trennzeichen + this.satzTrenner + headerStringArray[col] + this.satzTrenner;
+						headerString.append(trennzeichen)
+									.append(this.satzTrenner)
+									.append(headerStringArray[col])
+									.append(this.satzTrenner);
 					}
 				}
 				out.print(headerString);
@@ -200,7 +199,8 @@ public class CSVGenerator
 				if (col == 0)
 				{
 					zeile += this.satzTrenner + value.getValueEntry(col) + this.satzTrenner;
-				} else
+				}
+				else
 				{
 					zeile += trennzeichen + this.satzTrenner + value.getValueEntry(col) + this.satzTrenner;
 				}
